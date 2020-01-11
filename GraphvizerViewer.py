@@ -21,7 +21,7 @@ class GraphvizerViewer(QObject):
 		self.view.show()
 		self.mouse_middle_button_wheeled.connect(self.zoom)
 		self.mouse_left_button_pressed.connect(self.pan)
-
+		self.mouse_left_button_released.connect(self.pan_done)
 
 	@Slot(QWheelEvent)
 	def zoom(self, wheel_event):
@@ -33,7 +33,11 @@ class GraphvizerViewer(QObject):
 
 	@Slot(QMouseEvent)
 	def pan(self, mouse_event):
-		pass
+		self.view.setDragMode(QGraphicsView.ScrollHandDrag)
+
+	@Slot(QMouseEvent)
+	def pan_done(self, mouse_event):
+		self.view.setDragMode(QGraphicsView.NoDrag)
 
 	# https://git.io/JepEs
 	# https://www.qtcentre.org/threads/18447-wheelEvent-not-working-in-an-eventFilter
