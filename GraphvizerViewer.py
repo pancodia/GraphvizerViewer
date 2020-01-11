@@ -46,19 +46,19 @@ class GraphvizerViewer(QObject):
 			self.mouse_middle_button_wheeled.emit(event)
 			return True
 		elif event.type() == QEvent.MouseButtonPress:
-			if event.buttons() == Qt.LeftButton:
+			if event.button() == Qt.LeftButton:
 				self.mouse_left_button_pressed.emit(event)
-			elif event.buttons() == Qt.RightButton:
+			elif event.button() == Qt.RightButton:
 				self.mouse_right_button_pressed.emit(event)
-			elif event.buttons() == Qt.MidButton:
+			elif event.button() == Qt.MidButton:
 				pass
 			return False
 		elif event.type() == QEvent.MouseButtonRelease:
-			if event.buttons() == Qt.LeftButton:
+			if event.button() == Qt.LeftButton:
 				self.mouse_left_button_released.emit(event)
-			elif event.buttons() == Qt.RightButton:
+			elif event.button() == Qt.RightButton:
 				self.mouse_right_button_released.emit(event)
-			elif event.buttons() == Qt.MidButton:
+			elif event.button() == Qt.MidButton:
 				pass
 			return False
 		else:
