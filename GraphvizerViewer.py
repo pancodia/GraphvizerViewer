@@ -1,7 +1,7 @@
 import sys
 from PySide2.QtWidgets import QApplication, QGraphicsView, QGraphicsScene
 from PySide2.QtGui import QImage, QPixmap, QMouseEvent, QWheelEvent, QPainterPath, QGuiApplication
-from PySide2.QtCore import Signal, Slot, QObject, QEvent, QPointF, Qt
+from PySide2.QtCore import Signal, Slot, QObject, QEvent, QPointF, Qt, QFileSystemWatcher
 import time, os
 
 
@@ -13,6 +13,8 @@ class GraphvizerViewer(QGraphicsView):
 		self.image = QImage()
 		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(self.image))
 		self.last_release_time = 0
+		self.watcher = QFileSystemWatcher()
+		self.watcher.fileChanged.connect(self.refresh_image)
 		# Default window size
 		screen_rect = QGuiApplication.primaryScreen().availableGeometry()
 		self.resize(screen_rect.width() * 3/5, screen_rect.height() * 4/5)
@@ -32,6 +34,15 @@ class GraphvizerViewer(QGraphicsView):
 		self.scene.removeItem(self.pixmapitem)
 		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(self.image))
 		self.setWindowTitle(os.path.basename(imagepath))
+		# Register file watcher
+		if len(self.watcher.files()) != 0:
+			self.watcher.removePath(self.watcher.files()[0])
+		self.watcher.addPath(imagepath)
+
+	def refresh_image(self, imagepath):
+		self.image = QImage(imagepath)
+		self.scene.removeItem(self.pixmapitem)
+		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(self.image))
 
 	def mousePressEvent(self, mouse_event): # QMouseEvent
 		if mouse_event.button() == Qt.LeftButton:
