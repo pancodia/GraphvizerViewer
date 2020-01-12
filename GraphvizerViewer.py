@@ -1,11 +1,14 @@
 import sys
-from PySide2.QtWidgets import QApplication, QGraphicsView, QGraphicsScene
+from PySide2.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QSizePolicy
 from PySide2.QtGui import QImage, QPixmap, QMouseEvent, QWheelEvent, QPainterPath, QGuiApplication
 from PySide2.QtCore import Signal, Slot, QObject, QEvent, QPointF, Qt, QFileSystemWatcher, QRectF
 import time, os
 
 
 class GraphvizerViewer(QGraphicsView):
+	# Tell TabWidget to set title for current tab
+	image_dropped = Signal(str)
+
 	def __init__(self):
 		super(GraphvizerViewer, self).__init__(None)
 		self.scene = QGraphicsScene()
@@ -15,9 +18,6 @@ class GraphvizerViewer(QGraphicsView):
 		self.last_release_time = 0
 		self.watcher = QFileSystemWatcher()
 		self.watcher.fileChanged.connect(self.refresh_image)
-		# Default window size
-		screen_rect = QGuiApplication.primaryScreen().availableGeometry()
-		self.resize(screen_rect.width() * 3/5, screen_rect.height() * 4/5)
 
 	def dragEnterEvent(self, drag_enter_event): # QDragEnterEvent
 		if drag_enter_event.mimeData().hasUrls():
@@ -38,7 +38,7 @@ class GraphvizerViewer(QGraphicsView):
 		self.setSceneRect(QRectF(pixmap.rect()))
 		# This will reset scale matrix, otherwise the new image will be scaled as the old image
 		self.resetTransform()
-		self.setWindowTitle(os.path.basename(imagepath))
+		self.image_dropped.emit(os.path.basename(imagepath))
 		# Register file watcher
 		if len(self.watcher.files()) != 0:
 			self.watcher.removePath(self.watcher.files()[0])
@@ -81,9 +81,53 @@ class GraphvizerViewer(QGraphicsView):
 		coefficient = 1 + (num_steps * 0.25)
 		self.scale(coefficient, coefficient)
 
+
+class TabWidget(QTabWidget):
+	def __init__(self):
+		super(TabWidget, self).__init__(None)
+		self.setTabsClosable(True)
+		self.tabCloseRequested.connect(self.close_tab)
+		self.new_tab() # initial tab
+
+	def close_tab(self, index):
+		self.removeTab(index)
+
+	def new_tab(self):
+		tab = QWidget()
+		layout = QHBoxLayout()
+		viewer = GraphvizerViewer()
+		layout.addWidget(viewer)
+		tab.setLayout(layout)
+		self.addTab(tab, "A Tab")
+		viewer.image_dropped.connect(self.set_tab_name)
+		self.setCurrentIndex(self.count()-1) # Switch to the new tab
+
+	def set_tab_name(self, filebasename):
+		self.setTabText(self.currentIndex(), filebasename)
+
+
+class MainWindow(QWidget):
+	def __init__(self):
+		super(MainWindow, self).__init__(None)
+		self.layout = QVBoxLayout()
+		self.setLayout(self.layout)
+		self.setWindowTitle("Graphvizer Viewer")
+		# Default window size
+		screen_rect = QGuiApplication.primaryScreen().availableGeometry()
+		self.resize(screen_rect.width() * 3/5, screen_rect.height() * 4/5)
+		# Add a button
+		button = QPushButton("New Tab")
+		button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+		self.layout.addWidget(button)
+		# Add TabWidget
+		tab_widget = TabWidget()
+		self.layout.addWidget(tab_widget)
+		# Create a new tab when the button is pressed
+		button.clicked.connect(tab_widget.new_tab)
+
+
 if __name__ == "__main__":
 	app = QApplication(sys.argv)
-	viewer = GraphvizerViewer()
-	viewer.setWindowTitle("Graphvizer Viewer")
-	viewer.show()
+	mainwindow = MainWindow()
+	mainwindow.show()
 	sys.exit(app.exec_())
