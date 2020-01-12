@@ -1,7 +1,7 @@
 import sys
 from PySide2.QtWidgets import QApplication, QGraphicsView, QGraphicsScene
 from PySide2.QtGui import QImage, QPixmap, QMouseEvent, QWheelEvent, QPainterPath, QGuiApplication
-from PySide2.QtCore import Signal, Slot, QObject, QEvent, QPointF, Qt, QFileSystemWatcher
+from PySide2.QtCore import Signal, Slot, QObject, QEvent, QPointF, Qt, QFileSystemWatcher, QRectF
 import time, os
 
 
@@ -31,8 +31,13 @@ class GraphvizerViewer(QGraphicsView):
 		url = drop_event.mimeData().urls()
 		imagepath = url[0].toLocalFile()
 		self.image = QImage(imagepath)
+		pixmap = QPixmap.fromImage(self.image)
 		self.scene.removeItem(self.pixmapitem)
-		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(self.image))
+		self.pixmapitem = self.scene.addPixmap(pixmap)
+		# This will make scrollbar fit the image
+		self.setSceneRect(QRectF(pixmap.rect()))
+		# This will reset scale matrix, otherwise the new image will be scaled as the old image
+		self.resetTransform()
 		self.setWindowTitle(os.path.basename(imagepath))
 		# Register file watcher
 		if len(self.watcher.files()) != 0:
