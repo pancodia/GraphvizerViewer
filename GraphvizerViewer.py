@@ -1,17 +1,37 @@
 import sys
 from PySide2.QtWidgets import QApplication, QGraphicsView, QGraphicsScene
-from PySide2.QtGui import QImage, QPixmap, QMouseEvent, QWheelEvent, QPainterPath
+from PySide2.QtGui import QImage, QPixmap, QMouseEvent, QWheelEvent, QPainterPath, QGuiApplication
 from PySide2.QtCore import Signal, Slot, QObject, QEvent, QPointF, Qt
-import time
+import time, os
+
 
 class GraphvizerViewer(QGraphicsView):
 	def __init__(self):
 		super(GraphvizerViewer, self).__init__(None)
 		self.scene = QGraphicsScene()
 		self.setScene(self.scene)
-		self.image = QImage("E:\\multimedia\\picture\\忍者神龟\\F200705151517471444526594.jpg")
-		self.scene.addPixmap(QPixmap.fromImage(self.image))
+		self.image = QImage()
+		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(self.image))
 		self.last_release_time = 0
+		# Default window size
+		screen_rect = QGuiApplication.primaryScreen().availableGeometry()
+		self.resize(screen_rect.width() * 3/5, screen_rect.height() * 4/5)
+
+	def dragEnterEvent(self, drag_enter_event): # QDragEnterEvent
+		if drag_enter_event.mimeData().hasUrls():
+			drag_enter_event.acceptProposedAction()
+
+	# https://stackoverflow.com/a/4421835/4112667
+	def dragMoveEvent(self, event):
+		pass
+
+	def dropEvent(self, drop_event): # QDropEvent
+		url = drop_event.mimeData().urls()
+		imagepath = url[0].toLocalFile()
+		self.image = QImage(imagepath)
+		self.scene.removeItem(self.pixmapitem)
+		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(self.image))
+		self.setWindowTitle(os.path.basename(imagepath))
 
 	def mousePressEvent(self, mouse_event): # QMouseEvent
 		if mouse_event.button() == Qt.LeftButton:
