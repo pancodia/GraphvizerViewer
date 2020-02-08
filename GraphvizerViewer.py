@@ -5,12 +5,12 @@ from PySide2.QtCore import Signal, Slot, QObject, QEvent, QPointF, Qt, QFileSyst
 import time, os
 
 
-class GraphvizerViewer(QGraphicsView):
+class View(QGraphicsView):
 	# Tell TabWidget to set title for current tab
 	image_dropped = Signal(str)
 
 	def __init__(self):
-		super(GraphvizerViewer, self).__init__(None)
+		super(View, self).__init__(None)
 		self.scene = QGraphicsScene()
 		self.setScene(self.scene)
 		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(QImage()))
@@ -104,11 +104,11 @@ class TabWidget(QTabWidget):
 	def new_tab(self):
 		tab = QWidget()
 		layout = QHBoxLayout()
-		viewer = GraphvizerViewer()
-		layout.addWidget(viewer)
+		view = View()
+		layout.addWidget(view)
 		tab.setLayout(layout)
 		self.addTab(tab, "A Tab")
-		viewer.image_dropped.connect(self.set_tab_name)
+		view.image_dropped.connect(self.set_tab_name)
 		self.setCurrentIndex(self.count()-1) # Switch to the new tab
 
 	def set_tab_name(self, filebasename):
