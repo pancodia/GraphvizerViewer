@@ -13,8 +13,7 @@ class GraphvizerViewer(QGraphicsView):
 		super(GraphvizerViewer, self).__init__(None)
 		self.scene = QGraphicsScene()
 		self.setScene(self.scene)
-		self.image = QImage()
-		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(self.image))
+		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(QImage()))
 		self.last_release_time = 0
 		self.watcher = QFileSystemWatcher()
 		self.watcher.fileChanged.connect(self.refresh_image)
@@ -30,8 +29,8 @@ class GraphvizerViewer(QGraphicsView):
 	def dropEvent(self, drop_event): # QDropEvent
 		url = drop_event.mimeData().urls()
 		imagepath = url[0].toLocalFile()
-		self.image = QImage(imagepath)
-		pixmap = QPixmap.fromImage(self.image)
+		qimage = QImage(imagepath)
+		pixmap = QPixmap.fromImage(qimage)
 		self.scene.removeItem(self.pixmapitem)
 		self.pixmapitem = self.scene.addPixmap(pixmap)
 		# This will make scrollbar fit the image
@@ -45,9 +44,9 @@ class GraphvizerViewer(QGraphicsView):
 		self.watcher.addPath(imagepath)
 
 	def refresh_image(self, imagepath):
-		self.image = QImage(imagepath)
+		qimage = QImage(imagepath)
 		self.scene.removeItem(self.pixmapitem)
-		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(self.image))
+		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(qimage))
 
 	def mousePressEvent(self, mouse_event): # QMouseEvent
 		if mouse_event.button() == Qt.LeftButton:
