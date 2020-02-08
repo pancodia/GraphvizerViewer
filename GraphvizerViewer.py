@@ -43,8 +43,18 @@ class GraphvizerViewer(QGraphicsView):
 			self.watcher.removePath(self.watcher.files()[0])
 		self.watcher.addPath(imagepath)
 
+	# When overwriting an image file, I guess Windows will delete it and then create
+	# a new file with the same name. So this function will be called twice. The first
+	# round is triggered by deleting. In this case, the image file doesn't exist, so
+	# QImage and QPixmap are all invalid and as a result, the view will become white
+	# background. Only after the image being created and the function is called for
+	# the second time, will the view show the image normally. The User will notice a
+	# white flicker because of two rounds of callings. To resolve this problem, we
+	# need to detect the invalid QImage or QPixmap and skip the unintended round.
 	def refresh_image(self, imagepath):
 		qimage = QImage(imagepath)
+		if qimage.isNull():
+			return
 		self.scene.removeItem(self.pixmapitem)
 		self.pixmapitem = self.scene.addPixmap(QPixmap.fromImage(qimage))
 
