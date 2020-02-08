@@ -18,6 +18,30 @@ Sublime Text can view image but it doesn't support zoom or pan the image. If the
 
 The program is written using PySide2, so the executable file size is a bit large.
 
+# Installation
+
+## Method 1: Download the standalone executable file
+
+Developing...
+
+## Method 2: Install dependencies manually
+
+### Windows
+
+```
+# After install Python 3.x
+pip install PySide2
+python GraphvizerViewer.py
+```
+
+### Linux/OSX
+
+```
+dnf install python3 # apt-get, yum ...
+pip3 install PySide2
+python3 GraphvizerViewer.py
+```
+
 # Usage
 
 #### Open an image
