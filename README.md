@@ -1,0 +1,45 @@
+# Introduction
+
+[Graphvizer](https://github.com/hao-lee/Graphvizer) is a plugin for Sublime Text 3 to render image in real-time while you are writing. If you have tried it, you may find that its convenience is limited because Sublime Text is not a suitable image viewer as mentioned in [issue #14](https://github.com/hao-lee/Graphvizer/issues/14).
+
+Sublime Text can view image but it doesn't support zoom or pan the image. If the image is large, it will be very difficult to navigate it. That's why I write this viewer. GraphvizerViewer is an awesome supplement of Graphvizer. I bet you will like it.
+
+# Features
+
+* Zoom in/out
+* Reset zoom
+* Pan (Drag)
+* Refresh automatically when the image is modified
+* Multiple Tabs
+
+> For other features, please open an issue.
+
+# Shortcoming
+
+The program is written using PySide2, so the executable file size is a bit large.
+
+# Usage
+
+#### Open an image
+
+Just drag the image into the program window.
+
+#### Zoom
+
+Use mouse wheel to zoom in and zoom out.
+
+#### Pan
+
+Keep left mouse button pressed and drag the image.
+
+#### Zoom in a selected rectangle area
+
+Use right mouse button to select an area. The selected area will be zoomed in to fit the window automatically when you release the right mouse button.
+
+#### Reset zoom
+
+Double click the right mouse button to reset zoom.
+
+#### Multiple Tabs
+
+Click `New Tab` button to new an empty tab.
