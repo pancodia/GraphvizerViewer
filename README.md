@@ -37,7 +37,7 @@ python GraphvizerViewer.py
 ### Linux/OSX
 
 ```
-dnf install python3 # apt-get, yum ...
+dnf install python3 libxkbcommon-x11 # apt-get, yum ...
 pip3 install PySide2
 python3 GraphvizerViewer.py
 ```
