@@ -1,7 +1,8 @@
 import sys
-from PySide2.QtGui import QImage, QPixmap, QMouseEvent, QWheelEvent, QPainterPath, QGuiApplication
 from PySide2.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QSizePolicy, QMessageBox
+from PySide2.QtGui import QImage, QPixmap, QMouseEvent, QWheelEvent, QPainterPath, QGuiApplication, QPainter
 from PySide2.QtCore import Signal, Slot, QObject, QEvent, QPointF, Qt, QFileSystemWatcher, QRectF
+from PySide2.QtSvg import QSvgRenderer
 import time, os
 
 
@@ -34,13 +35,19 @@ class View(QGraphicsView):
 			qimage = QImage(imagepath)
 			pixmap = QPixmap.fromImage(qimage)
 		elif extension == ".svg":
-			pass
+			# https://stackoverflow.com/a/25029983/4112667
+			renderer = QSvgRenderer(imagepath)
+			pixmap = QPixmap(renderer.defaultSize())
+			pixmap.fill(Qt.transparent)
+			painter = QPainter(pixmap)
+			renderer.render(painter, pixmap.rect())
+			# https://www.cnblogs.com/cszlg/p/3355062.html
+			painter.end()
 		else:
 			msgbox = QMessageBox(self)
 			msgbox.setText("Doesn't support this format")
 			msgbox.show()
-		qimage = QImage(imagepath)
-		pixmap = QPixmap.fromImage(qimage)
+
 		self.scene.removeItem(self.pixmapitem)
 		self.pixmapitem = self.scene.addPixmap(pixmap)
 		# This will make scrollbar fit the image
