@@ -37,7 +37,8 @@ class View(QGraphicsView):
 		elif extension == ".svg":
 			# https://stackoverflow.com/a/25029983/4112667
 			renderer = QSvgRenderer(imagepath)
-			pixmap = QPixmap(renderer.defaultSize())
+			# The size of PNG is 33.3% bigger than SVG, so we expand SVG artificially.
+			pixmap = QPixmap(renderer.defaultSize()*1.333)
 			pixmap.fill(Qt.transparent)
 			painter = QPainter(pixmap)
 			renderer.render(painter, pixmap.rect())
