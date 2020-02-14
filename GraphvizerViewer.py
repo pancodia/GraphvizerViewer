@@ -48,6 +48,7 @@ class View(QGraphicsView):
 			msgbox = QMessageBox(self)
 			msgbox.setText("Doesn't support this format")
 			msgbox.show()
+			return
 
 		self.scene.removeItem(self.pixmapitem)
 		self.pixmapitem = self.scene.addPixmap(pixmap)
