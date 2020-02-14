@@ -1,6 +1,6 @@
 import sys
-from PySide2.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QSizePolicy
 from PySide2.QtGui import QImage, QPixmap, QMouseEvent, QWheelEvent, QPainterPath, QGuiApplication
+from PySide2.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, QTabWidget, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QSizePolicy, QMessageBox
 from PySide2.QtCore import Signal, Slot, QObject, QEvent, QPointF, Qt, QFileSystemWatcher, QRectF
 import time, os
 
@@ -29,6 +29,16 @@ class View(QGraphicsView):
 	def dropEvent(self, drop_event): # QDropEvent
 		url = drop_event.mimeData().urls()
 		imagepath = url[0].toLocalFile()
+		extension = os.path.splitext(imagepath)[1]
+		if extension.lower() in [".png", ".jpg", ".jpeg", ".gif", ".bmp"]:
+			qimage = QImage(imagepath)
+			pixmap = QPixmap.fromImage(qimage)
+		elif extension == ".svg":
+			pass
+		else:
+			msgbox = QMessageBox(self)
+			msgbox.setText("Doesn't support this format")
+			msgbox.show()
 		qimage = QImage(imagepath)
 		pixmap = QPixmap.fromImage(qimage)
 		self.scene.removeItem(self.pixmapitem)
