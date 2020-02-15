@@ -162,8 +162,42 @@ class WebView(QWebEngineView):
 			move up 5 pixels and the scroll position should decrease.
 			'''
 			target_scroll_pos = self.start_scroll_pos - delta
+
+			'''
+			Verify value range. I don't know if this is a must or whether this has any
+			effects or not.
+			'''
+			target_scroll_x = target_scroll_pos.x()
+			target_scroll_y = target_scroll_pos.y()
+			if target_scroll_x < 0:
+				target_scroll_x = 0
+			if target_scroll_y < 0:
+				target_scroll_y = 0
+			if target_scroll_x > self.page().contentsSize().width():
+				target_scroll_x = self.page().contentsSize().width()
+			if target_scroll_y > self.page().contentsSize().height():
+				target_scroll_y = self.page().contentsSize().height()
+
+			'''
+			We notice that if the page is zoomed in, the scrollbar moves faster than
+			the mouse cursor. Besides, the scrollbar may jump a large distance towards
+			the end in a weird way if you place the mouse cursor at the right bottom
+			corner and try to drag the page towards the left upper corner several times.
+			I don't know why but I print the target_scroll_pos which seems indeed correct.
+			So I guess this may be caused by the scrollTo function in JavaScript. I think
+			this function doesn't do things as I thought it would. Now that the page scrolls
+			faster than mouse cursor dragging only after the page is zoomed in and it seems
+			they have multiples relation, I guess if I divide the target_scroll_pos by
+			zoomFactor, the page scrolling speed may be slow down and maybe scrollTo can
+			scroll the page to correct position. Finally, this way is indeed the solution.
+			However, I don't know why.
+			If the page is zoomed out, it would be the opposite. The page scrolling speed
+			should be sped up to match the mouse cursor.
+			'''
+			target_scroll_x /= self.zoomFactor()
+			target_scroll_y /= self.zoomFactor()
 			# https://forum.qt.io/topic/60091/scroll-a-qwebengineview/3
-			self.page().runJavaScript(f"window.scrollTo({target_scroll_pos.x()}, {target_scroll_pos.y()})")
+			self.page().runJavaScript(f"window.scrollTo({target_scroll_x}, {target_scroll_y})")
 			return True # No further process, so text selection is disabled.
 		elif obj == self.child_obj and event.type() == QEvent.MouseButtonDblClick:
 			self.setZoomFactor(1)
