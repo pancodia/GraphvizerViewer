@@ -199,7 +199,7 @@ class WebView(QWebEngineView):
 			# https://forum.qt.io/topic/60091/scroll-a-qwebengineview/3
 			self.page().runJavaScript(f"window.scrollTo({target_scroll_x}, {target_scroll_y})")
 			return True # No further process, so text selection is disabled.
-		elif obj == self.child_obj and event.type() == QEvent.MouseButtonDblClick:
+		elif obj == self.child_obj and event.type() == QEvent.MouseButtonDblClick and event.buttons() == Qt.RightButton:
 			self.setZoomFactor(1)
 			return True
 
