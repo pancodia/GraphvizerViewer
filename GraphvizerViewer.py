@@ -142,7 +142,7 @@ class WebView(QWebEngineView):
 		elif obj == self.child_obj and event.type() == QEvent.MouseButtonPress:
 			self.start_mouse_pos = event.localPos()
 			self.start_scroll_pos = self.page().scrollPosition()
-			return True
+			return QWebEngineView.eventFilter(self, obj, event) # Make scrollbar work normally
 		elif obj == self.child_obj and event.type() == QEvent.MouseMove:
 			# Only process mouse move with left button pressed
 			if event.buttons() != Qt.LeftButton:
@@ -198,7 +198,7 @@ class WebView(QWebEngineView):
 			target_scroll_y /= self.zoomFactor()
 			# https://forum.qt.io/topic/60091/scroll-a-qwebengineview/3
 			self.page().runJavaScript(f"window.scrollTo({target_scroll_x}, {target_scroll_y})")
-			return True # No further process, so text selection is disabled.
+			return QWebEngineView.eventFilter(self, obj, event) # Make scrollbar work normally
 		elif obj == self.child_obj and event.type() == QEvent.MouseButtonDblClick and event.buttons() == Qt.RightButton:
 			self.setZoomFactor(1)
 			return True
