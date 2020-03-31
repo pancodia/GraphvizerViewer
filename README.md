@@ -48,6 +48,15 @@ pip3 install PySide2
 python3 GraphvizerViewer.py
 ```
 
+### MacOS and Anaconda Python
+
+If you installed Python 3 via Anaconda distribution, then you need to install PySide2 in the conda way. Otherwise, I had similar issue describe in this [SO thread](https://stackoverflow.com/questions/51912816/pyside2-qt-creator-run-issue-could-not-load-the-qt-platform-plugin-cocoa-in/60955108#60955108)
+
+```
+conda install -c conda-forge pyside2
+python3 GraphvizerViewer.py
+```
+
 # Usage
 
 #### Open an image
